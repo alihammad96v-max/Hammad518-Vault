@@ -75,8 +75,11 @@
   }
   async function start() {
     try {
-      const c=getConfig();
-      if (!validConfig(c)) { showPanel("setupPanel"); return; }
+      
+const c = {
+  url: "https://ftqhiiwpeqqucdizouyh.supabase.co",
+  key: "sb_publishable_GdxiQdTHvTsd2Juu6LO_Pg_bbm5iKMT"
+};
       initClient(c);
       const {data,error}=await supabase.auth.getSession(); if(error) throw error;
       session=data.session;
