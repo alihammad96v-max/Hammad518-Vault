@@ -115,17 +115,63 @@ const c = {
       session=result.data.session; $("userLabel").textContent=session?.user?.email || email; showPanel("unlockPanel");
     } catch(err) { message("authMessage",err.message || "Authentication failed."); }
   });
-  async function fetchRows() {
-    const {data,error}=await supabase.from("vault_items").select("*").order("updated_at",{ascending:false});
-    if(error) throw error;
-    items=[];
-    for(const row of (data||[])) {
-      try {
-        const payload=JSON.parse(await decryptText(row,vaultPassphrase));
-        items.push({...row,payload});
-      } catch { throw new Error("Could not decrypt your vault. Check the vault passphrase or verify the stored data."); }
+
+async function fetchRows() {
+  const { data, error } = await supabase
+    .from("vault_items")
+    .select("*")
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+
+  const rows = data || [];
+
+  if (rows.length === 0) {
+    throw new Error(
+      "Vault not initialized. Create a new vault first."
+    );
+  }
+  const checks = rows.filter(row => row.kind === "vault_check");
+  const records = rows.filter(row => row.kind !== "vault_check");
+
+  if (checks.length !== 1) {
+    throw new Error(
+      "Vault verification record is missing or invalid. Do not create another vault until you recover your data."
+    );
+  }
+
+  try {
+    const check = JSON.parse(
+      await decryptText(checks[0], vaultPassphrase)
+    );
+
+    if (
+      check.type !== "vault-verification" ||
+      check.version !== 1
+    ) {
+      throw new Error("Invalid verification record.");
+    }
+  } catch {
+    throw new Error("Wrong vault passphrase.");
+  }
+
+  const decrypted = [];
+
+  for (const row of records) {
+    try {
+      const payload = JSON.parse(
+        await decryptText(row, vaultPassphrase)
+      );
+      decrypted.push({ ...row, payload });
+    } catch {
+      throw new Error(
+        "Could not decrypt vault data. Check the passphrase or stored data."
+      );
     }
   }
+
+  items = decrypted;
+}
   async function pushItem(kind,payload,id) {
     const existing=items.find(x=>x.id===id);
     const sealed=await encryptText(JSON.stringify(payload),vaultPassphrase,existing?.salt);
@@ -216,13 +262,49 @@ const c = {
     try{await createBackup(pendingRecoveryKey,true);toast("Encrypted backup downloaded.");}
     catch(e){toast(e.message||"Backup failed.");}
   });
-  $("finishRecovery").addEventListener("click",async()=>{
-    if(!$("recoveryConfirmed").checked)return;
+  $("finishRecovery").addEventListener("click", async () => {
+    if (!$("recoveryConfirmed").checked) return;
+
     try {
-      // Initial recovery file is an encrypted empty vault; create it before any data exists.
-      await createBackup(pendingRecoveryKey,true);
-      pendingRecoveryKey=null;await loadItems();showPanel("vaultPanel");toast("Vault created. Save the recovery backup and key.");
-    }catch(e){toast(e.message||"Could not open vault.");}
+      if (!session?.user?.id) {
+        throw new Error("Please sign in again before creating your vault.");
+      }
+
+      if (!pendingRecoveryKey || !vaultPassphrase) {
+        throw new Error("Vault setup expired. Please start again.");
+      }
+
+      // Create an encrypted password-verification record.
+      const marker = await encryptText(
+        JSON.stringify({ type: "vault-verification", version: 1 }),
+        vaultPassphrase
+      );
+
+      const row = {
+        id: randomId(),
+        user_id: session.user.id,
+        kind: "vault_check",
+        ciphertext: marker.ciphertext,
+        iv: marker.iv,
+        salt: marker.salt,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase
+        .from("vault_items")
+        .insert(row);
+
+      if (error) throw error;
+
+      await createBackup(pendingRecoveryKey, true);
+      pendingRecoveryKey = null;
+
+      await loadItems();
+      showPanel("vaultPanel");
+      toast("Vault created. Save your recovery backup and key.");
+    } catch (e) {
+      toast(e.message || "Could not create vault.");
+    }
   });
   $("unlockForm").addEventListener("submit",async e=>{
     e.preventDefault();message("unlockMessage","");
