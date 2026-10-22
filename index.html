@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Personal Vault</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-mark">V</span><span>Personal Vault<small>Private notes & credentials</small></span></a>
+      <span id="connection" class="status">Not connected</span>
+    </header>
+
+    <section id="setupPanel" class="panel hidden">
+      <div class="eyebrow">FIRST-TIME SETUP</div>
+      <h1>Connect your vault</h1>
+      <p class="muted">Add your Supabase project details. These are public client settings; never paste a service-role key here.</p>
+      <form id="configForm" class="stack">
+        <label>Supabase project URL<input id="projectUrl" type="url" placeholder="https://your-project.supabase.co" required></label>
+        <label>Supabase publishable / anon key<input id="publishableKey" type="password" autocomplete="off" required></label>
+        <button class="primary">Save settings on this device</button>
+      </form>
+      <p class="tiny">Settings are stored in this browser's local storage. For a public deployment, configure these values at build time instead.</p>
+    </section>
+
+    <section id="authPanel" class="panel hidden">
+      <div class="eyebrow">YOUR PRIVATE SPACE</div>
+      <h1 id="authTitle">Welcome back</h1>
+      <p class="muted">Sign in to sync your encrypted vault across devices.</p>
+      <form id="authForm" class="stack">
+        <label>Email<input id="email" type="email" autocomplete="username" required></label>
+        <label>Password<input id="accountPassword" type="password" autocomplete="current-password" minlength="8" required></label>
+        <button id="authSubmit" class="primary">Sign in</button>
+      </form>
+      <div class="auth-actions"><button id="toggleAuth" class="text-button">Create an account</button><button id="resetConfig" class="text-button">Change project settings</button></div>
+      <p id="authMessage" class="message" role="status"></p>
+    </section>
+
+    <section id="unlockPanel" class="panel hidden">
+      <div class="eyebrow">END-TO-END ENCRYPTION</div>
+      <h1>Unlock your vault</h1>
+      <p class="muted">Your vault passphrase encrypts your data on this device before it reaches the cloud. It is different from your account password.</p>
+      <form id="unlockForm" class="stack">
+        <label>Vault passphrase<input id="vaultPassphrase" type="password" autocomplete="current-password" minlength="12" required></label>
+        <button class="primary">Unlock vault</button>
+      </form>
+      <div class="auth-actions"><button id="newVault" class="text-button">Create a new vault</button><button id="restoreVault" class="text-button">Restore encrypted backup</button></div>
+      <p id="unlockMessage" class="message" role="status"></p>
+    </section>
+
+    <section id="recoveryPanel" class="panel hidden">
+      <div class="eyebrow">SAVE THIS RECOVERY KEY</div>
+      <h1>Keep a recovery copy</h1>
+      <p class="muted">This key can unlock the recovery backup. Store it offline somewhere private. Anyone with both the backup and this key may read your data.</p>
+      <div class="recovery-key" id="recoveryKeyText"></div>
+      <div class="actions"><button id="downloadRecovery" class="secondary">Download encrypted backup</button><button id="copyRecovery" class="secondary">Copy recovery key</button></div>
+      <label class="check"><input id="recoveryConfirmed" type="checkbox"> I have saved my recovery key somewhere safe.</label>
+      <button id="finishRecovery" class="primary" disabled>Continue to vault</button>
+    </section>
+
+    <section id="vaultPanel" class="hidden">
+      <div class="welcome-row">
+        <div><div class="eyebrow">YOUR PRIVATE SPACE</div><h1>My vault</h1><p class="muted" id="userLabel"></p></div>
+        <button id="lockButton" class="secondary">Lock</button>
+      </div>
+      <div class="toolbar">
+        <button class="tab active" data-tab="notes">Notes</button>
+        <button class="tab" data-tab="passwords">Passwords</button>
+        <button class="tab" data-tab="backup">Backup & recovery</button>
+      </div>
+      <section id="notesTab" class="panel content-panel">
+        <div class="section-heading"><div><h2>Private notes</h2><p class="muted">Encrypted before syncing.</p></div><button id="addNote" class="primary">+ New note</button></div>
+        <div id="notesList" class="item-list"></div>
+        <p id="notesEmpty" class="empty">No notes yet. Create your first note.</p>
+      </section>
+      <section id="passwordsTab" class="panel content-panel hidden">
+        <div class="section-heading"><div><h2>Saved credentials</h2><p class="muted">Avoid reusing passwords on websites.</p></div><button id="addCredential" class="primary">+ Add login</button></div>
+        <div id="credentialsList" class="item-list"></div>
+        <p id="credentialsEmpty" class="empty">No credentials saved yet.</p>
+      </section>
+      <section id="backupTab" class="panel content-panel hidden">
+        <h2>Backup & recovery</h2>
+        <p class="muted">Download an encrypted backup regularly. The backup is encrypted with a random recovery key, not your vault passphrase.</p>
+        <div class="actions"><button id="makeBackup" class="primary">Create encrypted backup</button><button id="changeVaultPass" class="secondary">Change vault passphrase</button></div>
+        <div class="warning"><strong>Important</strong><p>If you lose both your vault passphrase and your recovery key, the data cannot be recovered by this app or Supabase. Keep offline backups.</p></div>
+        <p id="backupMessage" class="message" role="status"></p>
+      </section>
+      <footer class="vault-footer"><span id="syncStatus">Encrypted sync ready</span><button id="logoutButton" class="text-button">Sign out</button></footer>
+    </section>
+    <div id="toast" class="toast hidden" role="status"></div>
+  </main>
+
+  <dialog id="itemDialog">
+    <form id="itemForm" method="dialog" class="stack dialog-form">
+      <div class="section-heading"><h2 id="itemDialogTitle">New item</h2><button type="button" id="closeDialog" class="icon-button" aria-label="Close">×</button></div>
+      <input id="itemId" type="hidden">
+      <label>Title<input id="itemTitle" maxlength="160" required></label>
+      <div id="noteFields"><label>Note<textarea id="itemBody" rows="7" maxlength="50000"></textarea></label></div>
+      <div id="credentialFields" class="hidden">
+        <label>Website / app<input id="itemWebsite" maxlength="500"></label>
+        <label>Username / email<input id="itemUsername" maxlength="500"></label>
+        <label>Password<input id="itemSecret" maxlength="5000"></label>
+        <label>Extra notes<textarea id="itemExtra" rows="3" maxlength="10000"></textarea></label>
+      </div>
+      <div class="actions"><button type="button" id="cancelDialog" class="secondary">Cancel</button><button id="saveItem" class="primary">Save encrypted</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="restoreDialog">
+    <form id="restoreForm" class="stack dialog-form">
+      <div class="section-heading"><h2>Restore backup</h2><button type="button" id="closeRestore" class="icon-button">×</button></div>
+      <p class="muted">Select a backup JSON file and enter its recovery key. This replaces the current vault contents.</p>
+      <label>Encrypted backup file<input id="backupFile" type="file" accept=".json,application/json" required></label>
+      <label>Recovery key<input id="recoveryKeyInput" type="password" minlength="20" required></label>
+      <div class="actions"><button type="button" id="cancelRestore" class="secondary">Cancel</button><button class="primary">Restore backup</button></div>
+      <p id="restoreMessage" class="message"></p>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>
