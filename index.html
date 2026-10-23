@@ -62,35 +62,118 @@
       <button id="finishRecovery" class="primary" disabled>Continue to vault</button>
     </section>
 
-    <section id="vaultPanel" class="hidden">
-      <div class="welcome-row">
-        <div><div class="eyebrow">YOUR PRIVATE SPACE</div><h1>My vault</h1><p class="muted" id="userLabel"></p></div>
-        <button id="lockButton" class="secondary">Lock</button>
+
+<section id="vaultPanel" class="hidden">
+  <div class="welcome-row">
+    <div>
+      <div class="eyebrow">SECURE WORKSPACE</div>
+      <h1>Welcome to your vault</h1>
+      <p class="muted">Your private space, protected and encrypted.</p>
+    </div>
+    <button id="lockButton" class="secondary">Lock vault</button>
+  </div>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar panel">
+      <div class="sidebar-heading">WORKSPACE</div>
+
+      <div class="profile-card">
+        <div class="profile-avatar">V</div>
+        <div class="profile-details">
+          <strong>My Vault</strong>
+          <span id="userLabel"></span>
+        </div>
       </div>
-      <div class="toolbar">
-        <button class="tab active" data-tab="notes">Notes</button>
-        <button class="tab" data-tab="passwords">Passwords</button>
-        <button class="tab" data-tab="backup">Backup & recovery</button>
+
+      <div class="sidebar-heading">YOUR VAULT</div>
+
+      <nav class="sidebar-nav" aria-label="Vault navigation">
+        <button class="tab active" data-tab="notes">
+          <span class="nav-icon">▤</span>
+          Notes
+          <span class="nav-arrow">›</span>
+        </button>
+        <button class="tab" data-tab="passwords">
+          <span class="nav-icon">▣</span>
+          Passwords
+          <span class="nav-arrow">›</span>
+        </button>
+        <button class="tab" data-tab="backup">
+          <span class="nav-icon">↻</span>
+          Backup &amp; recovery
+          <span class="nav-arrow">›</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-security">
+        <span class="security-dot"></span>
+        <div>
+          <strong>Vault protected</strong>
+          <p>Your data is encrypted.</p>
+        </div>
       </div>
+
+      <button id="logoutButton" class="sidebar-logout">↗ Sign out</button>
+    </aside>
+
+    <div class="dashboard-main">
+      <div class="dashboard-topline">
+        <div>
+          <div class="eyebrow">PERSONAL WORKSPACE</div>
+          <h2 id="dashboardHeading">Private notes</h2>
+        </div>
+        <span class="status">● Secure vault</span>
+      </div>
+
       <section id="notesTab" class="panel content-panel">
-        <div class="section-heading"><div><h2>Private notes</h2><p class="muted">Encrypted before syncing.</p></div><button id="addNote" class="primary">+ New note</button></div>
+        <div class="section-heading">
+          <div>
+            <h2>Private notes</h2>
+            <p class="muted">Your thoughts, encrypted before syncing.</p>
+          </div>
+          <button id="addNote" class="primary">+ New note</button>
+        </div>
         <div id="notesList" class="item-list"></div>
         <p id="notesEmpty" class="empty">No notes yet. Create your first note.</p>
       </section>
+
       <section id="passwordsTab" class="panel content-panel hidden">
-        <div class="section-heading"><div><h2>Saved credentials</h2><p class="muted">Avoid reusing passwords on websites.</p></div><button id="addCredential" class="primary">+ Add login</button></div>
+        <div class="section-heading">
+          <div>
+            <h2>Saved credentials</h2>
+            <p class="muted">Keep your login details in one secure place.</p>
+          </div>
+          <button id="addCredential" class="primary">+ Add login</button>
+        </div>
         <div id="credentialsList" class="item-list"></div>
         <p id="credentialsEmpty" class="empty">No credentials saved yet.</p>
       </section>
+
       <section id="backupTab" class="panel content-panel hidden">
-        <h2>Backup & recovery</h2>
-        <p class="muted">Download an encrypted backup regularly. The backup is encrypted with a random recovery key, not your vault passphrase.</p>
-        <div class="actions"><button id="makeBackup" class="primary">Create encrypted backup</button><button id="changeVaultPass" class="secondary">Change vault passphrase</button></div>
-        <div class="warning"><strong>Important</strong><p>If you lose both your vault passphrase and your recovery key, the data cannot be recovered by this app or Supabase. Keep offline backups.</p></div>
+        <h2>Backup &amp; recovery</h2>
+        <p class="muted">
+          Create an encrypted backup regularly and store your recovery key
+          somewhere private.
+        </p>
+        <div class="actions">
+          <button id="makeBackup" class="primary">Create encrypted backup</button>
+          <button id="changeVaultPass" class="secondary">Change vault passphrase</button>
+        </div>
+        <div class="warning">
+          <strong>Protect your recovery key</strong>
+          <p>If you lose both your vault passphrase and recovery key,
+          your encrypted data may not be recoverable.</p>
+        </div>
         <p id="backupMessage" class="message" role="status"></p>
       </section>
-      <footer class="vault-footer"><span id="syncStatus">Encrypted sync ready</span><button id="logoutButton" class="text-button">Sign out</button></footer>
-    </section>
+
+      <footer class="vault-footer">
+        <span id="syncStatus">Encrypted sync ready</span>
+      </footer>
+    </div>
+  </div>
+</section>
+
     <div id="toast" class="toast hidden" role="status"></div>
   </main>
 
