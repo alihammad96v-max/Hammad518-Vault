@@ -116,6 +116,23 @@ const c = {
     } catch(err) { message("authMessage",err.message || "Authentication failed."); }
   });
 
+  $("googleSignIn").addEventListener("click", async () => {
+    message("authMessage", "");
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: "https://alihammad96v-max.github.io/Hammad518-Vault/"
+        }
+      });
+
+      if (error) throw error;
+    } catch (err) {
+      message("authMessage", err.message || "Google sign-in failed.");
+    }
+  });
+  
 async function fetchRows() {
   const { data, error } = await supabase
     .from("vault_items")
