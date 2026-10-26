@@ -575,3 +575,253 @@ dialog::backdrop {
     font-size: 10px;
   }
 }
+
+/* Hammad518 Vault — Premium Emerald Theme */
+:root {
+  color-scheme: dark;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  color: #e5eee9;
+  background: #080d0b;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 10% 0%, #123b2b66, transparent 42%),
+    radial-gradient(ellipse at 100% 80%, #064e3b33, transparent 35%),
+    #080d0b;
+  color: #e5eee9;
+}
+
+.shell {
+  max-width: 1100px;
+  padding: 32px 22px 70px;
+}
+
+.topbar {
+  margin-bottom: 42px;
+}
+
+.brand {
+  gap: 14px;
+  letter-spacing: -0.4px;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #34d399, #047857);
+  color: #03140d;
+  box-shadow: 0 0 30px #10b98138;
+}
+
+.brand small,
+.muted,
+.tiny {
+  color: #91a49a;
+}
+
+.status {
+  color: #6ee7b7;
+  background: #10291f;
+  border: 1px solid #22543d;
+}
+
+.panel {
+  background: linear-gradient(145deg, #131d18, #0d1511);
+  border: 1px solid #263b30;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 20px 70px #0004;
+  animation: vault-enter 0.45s ease both;
+}
+
+@keyframes vault-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.eyebrow {
+  color: #6ee7b7;
+  letter-spacing: 0.16em;
+}
+
+h1 {
+  color: #f0fdf4;
+  letter-spacing: -0.055em;
+}
+
+h2 {
+  color: #e5eee9;
+}
+
+input,
+textarea {
+  background: #0a120e;
+  color: #f0fdf4;
+  border: 1px solid #2b4034;
+  border-radius: 12px;
+  padding: 13px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px #34d39920;
+}
+
+label {
+  color: #c3d3c9;
+}
+
+button {
+  border-radius: 12px;
+  transition: transform 0.2s, background 0.2s,
+    box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.primary {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: #04150d;
+  box-shadow: 0 5px 18px #10b98120;
+}
+
+.primary:hover {
+  background: linear-gradient(135deg, #6ee7b7, #34d399);
+  box-shadow: 0 7px 24px #10b98135;
+}
+
+.secondary {
+  background: #1a2921;
+  color: #d1fae5;
+  border: 1px solid #304a3a;
+}
+
+.secondary:hover {
+  background: #24392c;
+}
+
+.text-button {
+  color: #6ee7b7;
+}
+
+.toolbar {
+  border-bottom-color: #263b30;
+}
+
+.tab {
+  color: #a0b2a7;
+}
+
+.tab.active {
+  background: #153c2b;
+  color: #6ee7b7;
+  box-shadow: inset 0 -2px #34d399;
+}
+
+.content-panel {
+  background: #101914;
+  border-color: #263b30;
+}
+
+.vault-item {
+  background: #101a14;
+  border-color: #293e31;
+  border-radius: 15px;
+  transition: border-color 0.2s, background 0.2s,
+    transform 0.2s;
+}
+
+.vault-item:hover {
+  background: #14231a;
+  border-color: #39805b;
+  transform: translateY(-2px);
+}
+
+.vault-item p,
+.empty {
+  color: #94a99b;
+}
+
+.item-actions button,
+.icon-button {
+  background: #203127;
+  color: #d1fae5;
+}
+
+.item-actions button:hover,
+.icon-button:hover {
+  background: #2b4635;
+}
+
+.vault-footer {
+  border-top-color: #263b30;
+  color: #91a49a;
+}
+
+.warning {
+  background: #2b2110;
+  border-color: #725423;
+  color: #f5d99b;
+}
+
+.recovery-key {
+  background: #0a120e;
+  border-color: #39704f;
+  color: #a7f3d0;
+}
+
+dialog {
+  background: #111b15;
+  color: #e5eee9;
+  border-color: #304638;
+}
+
+dialog::backdrop {
+  background: #000b;
+  backdrop-filter: blur(8px);
+}
+
+.toast {
+  background: #153c2b;
+  color: #d1fae5;
+  border: 1px solid #39704f;
+}
+
+.creator-credit {
+  color: #718b7a;
+}
+
+.creator-credit:hover {
+  color: #6ee7b7;
+}
+
+@media (max-width: 600px) {
+  .shell {
+    padding: 18px 12px 48px;
+  }
+
+  .panel {
+    padding: 20px;
+  }
+
+  .topbar {
+    gap: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
